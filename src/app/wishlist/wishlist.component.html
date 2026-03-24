@@ -1,0 +1,31 @@
+<div class="container mt-5">
+  <h2 class="mb-4 fw-bold text-uppercase">My Wishlist 💖</h2>
+  
+  <div class="row g-4" *ngIf="items.length > 0; else emptyWish">
+    <div class="col-md-3" *ngFor="let item of items">
+      <div class="card shadow-sm border-0">
+        <img [src]="item.img" class="card-img-top p-3" height="150" style="object-fit: contain;">
+        <div class="card-body text-center">
+          <h6 class="fw-bold mb-1">{{item.name}}</h6>
+          <p class="text-success fw-bold mb-3">₹{{item.price}}</p>
+          
+          <div class="d-grid gap-2">
+            <button class="btn btn-success btn-sm" (click)="moveToCart(item)">
+              <i class="bi bi-cart-plus"></i> Move to Cart
+            </button>
+            <button class="btn btn-light btn-sm text-danger" (click)="removeItem(item.id)">
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyWish>
+    <div class="text-center py-5">
+      <h4>Your wishlist is empty!</h4>
+      <a routerLink="/home" class="btn btn-primary mt-3">Start Browsing</a>
+    </div>
+  </ng-template>
+</div>

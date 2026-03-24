@@ -1,0 +1,42 @@
+.navbar {
+  padding: 0.6rem 0;
+  /* 🟢 Gradient ko thoda smooth banaya */
+  background: linear-gradient(90deg, #0d6efd 0%, #0044cc 100%) !important;
+}
+
+/* 🟢 Left Gap ko bharna */
+.container-fluid {
+  padding-left: 20px !important; /* Isse Branding bilkul left se start hogi */
+}
+
+.navbar-brand {
+  margin-right: 30px; /* Branding aur Home ke beech ka gap control karein */
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #fff !important;
+}
+
+/* 🟢 Active link ke niche ki line */
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  width: 60%;
+  height: 3px;
+  background: #ffc107; /* Gold color for active line */
+  bottom: -2px;
+  left: 20%;
+  border-radius: 10px;
+}
+
+.btn-danger {
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+}

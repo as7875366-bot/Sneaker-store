@@ -1,0 +1,28 @@
+/* Card Layout for Register */
+.register-card {
+  width: 100%;
+  min-width: 400px; /* Ye sabse important hai - isse squeeze nahi hoga */
+  background: #fff;
+  padding: 20px;
+}
+
+.address-compact-box {
+  background: #f8faff;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.form-label-sm {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+/* Responsive fix */
+@media (max-width: 768px) {
+  .register-card {
+    min-width: 100%;
+  }
+}

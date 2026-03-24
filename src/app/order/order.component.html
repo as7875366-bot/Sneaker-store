@@ -1,0 +1,54 @@
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Order History</h2>
+    <a routerLink="/home" class="btn btn-outline-primary btn-sm">Continue Shopping</a>
+  </div>
+
+  @if (myorder.length > 0) {
+    @for (order of myorder; track order.orderId) {
+      <div class="card mb-4 shadow-sm order-card">
+        <div class="card-header bg-white d-flex justify-content-between">
+          <span class="text-muted">Order ID: <strong>#{{order.orderId}}</strong></span>
+          <span class="badge bg-info text-dark">{{order.date | date:'medium'}}</span>
+        </div>
+        
+        <div class="card-body">
+          @for (item of order.items; track item.id) {
+            <div class="row align-items-center mb-2">
+              <div class="col-2 col-md-1">
+                <img [src]="item.img" class="img-fluid rounded" alt="shoe">
+              </div>
+              <div class="col-6 col-md-8">
+                <h6 class="mb-0">{{item.name}}</h6>
+                <small class="text-muted">Quantity: {{item.quantity}}</small>
+              </div>
+              <div class="col-4 col-md-3 text-end fw-bold">
+                ₹{{item.price * item.quantity}}
+              </div>
+            </div>
+          }
+          
+          <hr>
+          
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="small text-uppercase text-muted d-block">Status</span>
+              <span class="badge bg-warning">{{order.status}}</span>
+            </div>
+            <div class="text-end">
+              <span class="small text-uppercase text-muted d-block">Grand Total</span>
+              <h4 class="text-success mb-0">₹{{order.total}}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="text-center py-5 border rounded bg-light">
+      <i class="bi bi-bag-x display-1 text-muted"></i>
+      <h3 class="mt-3">No Orders Found</h3>
+      <p class="text-muted">Looks like you haven't ordered anything yet.</p>
+      <a routerLink="/home" class="btn btn-primary mt-2">Browse Sneakers</a>
+    </div>
+  }
+</div>

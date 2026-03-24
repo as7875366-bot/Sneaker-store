@@ -1,0 +1,51 @@
+<div class="container mt-4">
+  <div class="row mb-4 p-3 bg-white shadow-sm rounded align-items-end mx-1">
+    
+    <div class="col-md-4">
+      <label class="form-label fw-bold small">SEARCH PRODUCT</label>
+      <input type="text" class="form-control" placeholder="Search by name..." 
+             [(ngModel)]="searchText" (input)="applyfilter()">
+    </div>
+
+    <div class="col-md-4">
+      <div class="d-flex justify-content-between">
+        <label class="form-label fw-bold small">MAX PRICE</label>
+        <span class="text-primary fw-bold">₹{{ maxPrice }}</span>
+      </div>
+      <input type="range" class="form-range" min="0" max="100000" step="1000" 
+             [(ngModel)]="maxPrice" (input)="applyfilter()">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label fw-bold small">SORT BY</label>
+      <select class="form-select" [(ngModel)]="sortOrder" (change)="applyfilter()">
+        <option value="">Default</option>
+        <option value="low">Price: Low to High</option>
+        <option value="high">Price: High to Low</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 mb-4" *ngFor="let p of filteredProducts">
+      <div class="card shadow-sm h-100 border-0 position-relative wishlist-card">
+        <img [src]="p.img" class="card-img-top p-3" style="height: 200px; object-fit: contain;">
+    <div class="card-body">
+  <h5 class="card-title fw-bold text-truncate" title="{{ p.name }}">{{ p.name }}</h5>
+  
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="text-success fw-bold fs-5">₹{{ p.price }}</span>
+    
+    <button class="btn btn-primary btn-sm px-3 shadow-sm fw-bold rounded-pill" (click)="add(p)">
+      <i class="bi bi-cart-plus me-1"></i> Add to Cart
+    </button>
+  </div>
+</div>
+      </div>
+    </div>
+    
+    <div class="col-12 text-center py-5" *ngIf="filteredProducts.length === 0">
+        <h4 class="text-muted">No products found! 👟</h4>
+    </div>
+  </div>
+</div>

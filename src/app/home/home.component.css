@@ -1,0 +1,22 @@
+.btn-dark, .btn-warning {
+  letter-spacing: 0.5px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-dark:hover {
+  background-color: #444;
+}
+
+.product-card {
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.wishlist-btn {
+  z-index: 5;
+}

@@ -1,0 +1,25 @@
+.card {
+  transition: all 0.3s ease;
+}
+
+.table thead th {
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.btn-link:hover {
+  transform: scale(1.2);
+}
+
+.rounded-4 {
+  border-radius: 1rem !important;
+}
+
+/* Quantity buttons hover effect */
+.btn-outline-secondary:hover {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}

@@ -1,0 +1,11 @@
+/* Ensure karein ki container ki height aur visibility sahi hai */
+#stripe-card-element {
+  min-height: 40px;
+  width: 100%;
+  background: white;
+}
+
+/* Agar container empty hai toh bhi space dikhe */
+.shadow-inner {
+  min-height: 70px;
+}
