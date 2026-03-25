@@ -3,43 +3,41 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { OrderService } from '../order.service';
 import { CartService } from '../cartservices.service';
+import { EmailService } from '../email.service'; // 1. EmailService Import kiya
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
+
 declare var Stripe: any; 
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.css'
 })
 export class CheckoutComponent {
-checkoutForm! :  FormGroup
-cart : any[]=[]
-subtotal : number = 0;
-gst:number = 4.45;
-grandtotal : number = 0;
+  checkoutForm!: FormGroup;
+  cart: any[] = [];
+  subtotal: number = 0;
+  gst: number = 4.45;
+  grandtotal: number = 0;
 
+  stripe: any;
+  cartElement: any;
+  inprocessing = false;
 
-stripe : any;
-cartElement : any;
-inprocessing = false;
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private orderservice = inject(OrderService);
+  private cartservice = inject(CartService);
+  private emailService = inject(EmailService); // 2. Service Inject ki
 
-private fb = inject(FormBuilder)
-private router = inject(Router)
-private orderservice = inject(OrderService)
-private cartservice = inject(CartService)
-
-
- ngOnInit(): void {
+  ngOnInit(): void {
     this.cart = this.cartservice.getCartItems();
     this.subtotal = this.cartservice.getSubtotal();
-    
-    // Total calculation: Subtotal + GST
     this.grandtotal = this.subtotal + this.gst;
 
-    // Agar cart khali hai toh redirect karein
     if (this.cart.length === 0) {
       this.router.navigate(['/home']);
       return;
@@ -48,33 +46,30 @@ private cartservice = inject(CartService)
     this.initForm();
   }
 
-
-ngAfterViewInit() {
-  setTimeout(() => {
-    // Console mein check karein ki Stripe load hua ya nahi
-    if (typeof Stripe !== 'undefined') {
-      this.stripe = Stripe('pk_test_51OXLkBCgTYG0LBH1TKnX4icXnEyw1xOIEJSZvAeKlmEq6RnSPbl9uqdwqY9UWKsvRJN6m3dE05ArIp6gNJ9kxpby00rl1GahFz');
-      const elements = this.stripe.elements();
-      
-      this.cartElement = elements.create('card', {
-        hidePostalCode: true,
-        style: {
-          base: {
-            fontSize: '18px', // Size thoda bada karke check karein
-            color: '#32325d',
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (typeof Stripe !== 'undefined') {
+        this.stripe = Stripe('pk_test_51OXLkBCgTYG0LBH1TKnX4icXnEyw1xOIEJSZvAeKlmEq6RnSPbl9uqdwqY9UWKsvRJN6m3dE05ArIp6gNJ9kxpby00rl1GahFz');
+        const elements = this.stripe.elements();
+        
+        this.cartElement = elements.create('card', {
+          hidePostalCode: true,
+          style: {
+            base: {
+              fontSize: '18px',
+              color: '#32325d',
+            }
           }
-        }
-      });
+        });
 
-      console.log("Mounting now...");
-      this.cartElement.mount('#stripe-card-element');
-    } else {
-      console.error("Stripe script not found in index.html");
-    }
-  }, 1000); // 1 second ka delay dekar dekhein
-}
+        this.cartElement.mount('#stripe-card-element');
+      } else {
+        console.error("Stripe script not found in index.html");
+      }
+    }, 1000);
+  }
 
-    initForm() {
+  initForm() {
     this.checkoutForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -89,7 +84,7 @@ ngAfterViewInit() {
     });
   }
 
-    async onSubmit() {
+  async onSubmit() {
     if (this.checkoutForm.invalid) {
       this.markFormGroupTouched(this.checkoutForm);
       return;
@@ -111,37 +106,51 @@ ngAfterViewInit() {
     }
   }
 
-   processFinalOrder(paymentId: string) {
-    // 1. Order Object Structure
+  processFinalOrder(paymentId: string) {
+    const orderId = 'ORD' + Math.floor(Math.random() * 1000000);
+    const shippingDetails = this.checkoutForm.value;
+
     const finalOrder = {
-      orderId: 'ORD' + Math.floor(Math.random() * 1000000),
+      orderId: orderId,
       date: new Date(),
-      items: [...this.cart], // Cart snapshot
+      items: [...this.cart],
       total: this.grandtotal,
       paymentId: paymentId,
       status: 'Pending',
-      shippingDetails: this.checkoutForm.value
+      shippingDetails: shippingDetails
     };
 
-    // 2. Save in Service (LocalStorage)
+    // 3. Email Data Taiyar Karo
+    const emailParams = {
+      to_name: shippingDetails.firstName + ' ' + shippingDetails.lastName,
+      order_id: orderId,
+      total_amount: '₹' + this.grandtotal.toFixed(2),
+      customer_email: shippingDetails.email,
+      message: `Bhai, aapka order successfully place ho gaya hai! Total Items: ${this.cart.length}`
+    };
+
+    // 4. Order Place Karo
     this.cartservice.placeOrder(finalOrder);
+
+    // 5. Confirmation Email Bhejo
+    this.emailService.sendEmailData(emailParams)
+      .then(() => console.log('Email Sent!'))
+      .catch((err) => console.error('Email failed!', err));
     
     this.inprocessing = false;
 
-    // 3. Success Feedback
     Swal.fire({
       icon: 'success',
       title: 'Order Placed!',
-      text: 'Thank you for shopping with us.',
+      text: 'Confirmation email has been sent.',
       timer: 2000,
       showConfirmButton: false
     }).then(() => {
-      this.router.navigate(['/orders']); // History page par redirect
+      this.router.navigate(['/orders']);
     });
   }
 
-    private markFormGroupTouched(formGroup: FormGroup) {
+  private markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => control.markAsTouched());
   }
-
 }

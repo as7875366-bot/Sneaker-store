@@ -1,4 +1,11 @@
 <app-navbar></app-navbar>
-<div class="container-fluid p-0">
+
+<div class="theme-controller">
+  <button class="btn-toggle shadow-lg" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Light' : 'Switch to Dark'">
+    <i class="bi" [class.bi-sun-fill]="isDarkMode" [class.bi-moon-stars-fill]="!isDarkMode"></i>
+  </button>
+</div>
+
+<div class="container-fluid p-0 main-content">
   <router-outlet></router-outlet>
 </div>
